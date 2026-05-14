@@ -1,33 +1,55 @@
-import React, { useState } from 'react';
+import { useState } from "react";
 
-function ProjectForm({ onAddProject }) {
-  const [formData, setFormData] = useState({ title: '', description: '', image: '', link: '' });
+function ProjectForm({ onRegister }) {
+  const [formData, setFormData] = useState({ title: "", description: "" });
+  const [validationMessage, setValidationMessage] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  function updateField(field, value) {
+    setFormData({ ...formData, [field]: value });
+  }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Default tech image if user leaves it blank
-    const techPlaceholder = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&q=80";
-    
-    const finalData = {
-      ...formData,
-      image: formData.image.trim() === "" ? techPlaceholder : formData.image
-    };
+  function handleAdd(event) {
+    event.preventDefault();
 
-    onAddProject(finalData);
-    setFormData({ title: '', description: '', image: '', link: '' });
-  };
+    if (!formData.title.trim()) {
+      setValidationMessage("Project title is required.");
+      return;
+    }
+
+    onRegister({
+      id: Date.now(),
+      title: formData.title,
+      description: formData.description,
+    });
+
+    setFormData({ title: "", description: "" });
+    setValidationMessage("");
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="project-form">
-      <input type="text" name="title" placeholder="Project Title" value={formData.title} onChange={handleChange} required />
-      <input type="text" name="description" placeholder="Tech Stack / Description" value={formData.description} onChange={handleChange} required />
-      <input type="text" name="image" placeholder="Image URL (or leave blank for Tech Image)" value={formData.image} onChange={handleChange} />
-      <button type="submit">Publish Project</button>
-    </form>
+    <div>
+      <h2>Add Project</h2>
+      <form onSubmit={handleAdd}>
+        <div>
+          <label>Title</label>
+          <input
+            placeholder="e.g. Portfolio Website"
+            value={formData.title}
+            onChange={(e) => updateField("title", e.target.value)}
+          />
+          {validationMessage && <p>{validationMessage}</p>}
+        </div>
+        <div>
+          <label>Description</label>
+          <textarea
+            placeholder="A short description of the project..."
+            value={formData.description}
+            onChange={(e) => updateField("description", e.target.value)}
+          />
+        </div>
+        <button type="submit">+ Add Project</button>
+      </form>
+    </div>
   );
 }
 

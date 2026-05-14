@@ -1,17 +1,36 @@
+import { useState } from "react";
 
- import React from 'react';
-import ProjectCard from './ProjectCard';
+function ProjectList({ items }) {
+  const [query, setQuery] = useState("");
 
-function ProjectList({ projects }) {
-  if (projects.length === 0) {
-    return <p className="no-results">No projects found. Try a different search or add a new one!</p>;
-  }
+  const visibleItems = items.filter(
+    (entry) =>
+      entry.title.toLowerCase().includes(query.toLowerCase()) ||
+      entry.description.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
-    <div className="project-list">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
-      ))}
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search projects..."
+      />
+
+      {items.length === 0 ? (
+        <p>No projects has been added. Please add one above to get started!</p>
+      ) : visibleItems.length === 0 ? (
+        <p>No projects match your search.</p>
+      ) : (
+        <ul>
+          {visibleItems.map((entry) => (
+            <li key={entry.id}>
+              <strong>{entry.title}</strong>
+              {entry.description && <p>{entry.description}</p>}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
